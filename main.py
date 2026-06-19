@@ -12,9 +12,14 @@ class Shell(cmd.Cmd):
     def prompt(self) -> str:  # type: ignore
         return f"\n{BLUE}{Path.cwd().name}{RESET} $ "
 
-    # TODO: add args
-    def do_ls(self, _: str) -> None:  # We don't care about the args yet
-        items = [item.resolve() for item in Path.cwd().iterdir()]
+    # TODO: add flags
+    def do_ls(self, arg: str) -> None:
+        target = Path(arg or ".")
+        if not target.is_dir():
+            print(f"Error: {str(target)!r} not a directory")
+            return
+
+        items = [item.resolve() for item in target.iterdir()]
         items.sort(key=lambda item: (not item.is_dir(), item.name.lower()))
         for item in items:
             color = BLUE if item.is_dir() else ""
